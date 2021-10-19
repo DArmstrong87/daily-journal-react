@@ -44,7 +44,8 @@ export const DailyJournal = () => {
     setEntry({
       concept: "",
       entry: "",
-      moodId: 0
+      moodId: 0,
+      tags: ""
     })
   }
 

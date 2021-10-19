@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
     const [editMode, setEditMode] = useState(false)
     const [updatedEntry, setUpdatedEntry] = useState(entry)
+    const [tagsSelected, updateTags] = useState([])
 
     useEffect(() => {
         setUpdatedEntry(entry)
@@ -13,7 +14,8 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
             setEditMode(false)
         }
     }, [entry])
-
+    console.log(updatedEntry)
+    console.log(tagsSelected)
     const handleControlledInputChange = (event) => {
         /*
             When changing a state object or array, always create a new one
@@ -33,6 +35,13 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
             copyEntry.date = Date(Date.now()).toLocaleString('en-us').split('GMT')[0]
         }
         onFormSubmit(copyEntry)
+    }
+
+    const pushTags = (value) => {
+        let index = tagsSelected.indexOf(value)
+        if (tagsSelected.includes(value)) {
+            updateTags(tagsSelected.splice(index, 1))
+        } else { updateTags(tagsSelected.push(value)) }
     }
 
     return (
@@ -86,9 +95,11 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
                         <div className="control">
                             {tags.map(tag => {
                                 return <>
-                                    <input type="checkbox"
+                                    <input type="checkbox" name="tags"
                                         value={tag.id}
-                                        onChange={handleControlledInputChange} /> {tag.name}
+                                        onChange={() => {
+                                            pushTags(tag.id)
+                                        }} /> {tag.name}
                                 </>
                             })}
                         </div>
