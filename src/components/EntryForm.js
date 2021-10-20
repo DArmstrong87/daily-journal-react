@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react"
 export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
     const [editMode, setEditMode] = useState(false)
     const [updatedEntry, setUpdatedEntry] = useState(entry)
-    const [tagsSelected, updateTags] = useState([])
 
     useEffect(() => {
         setUpdatedEntry(entry)
@@ -14,8 +13,7 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
             setEditMode(false)
         }
     }, [entry])
-    console.log(updatedEntry)
-    console.log(tagsSelected)
+
     const handleControlledInputChange = (event) => {
         /*
             When changing a state object or array, always create a new one
@@ -26,22 +24,35 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
         setUpdatedEntry(newEntry)
     }
 
+    console.log(updatedEntry)
+    const handleCheckboxes = (event) => {
+        const newEntry = Object.assign({}, updatedEntry)
+        if (newEntry.tags) {
+            if (newEntry.tags.includes(parseInt(event.target.value))) {
+                const index = newEntry.tags.indexOf(parseInt(event.target.value))
+                newEntry.tags.splice(index, 1)
+            }
+            else {
+                newEntry.tags.push(parseInt(event.target.value))
+            }
+        }
+        else {
+            newEntry.tags = []
+            newEntry.tags.push(parseInt(event.target.value))
+        }
+        newEntry.tags.sort()
+        setUpdatedEntry(newEntry)
+
+    }
 
 
     const constructNewEntry = () => {
         const copyEntry = { ...updatedEntry }
-        copyEntry.moodId = parseInt(copyEntry.moodId)
+        // copyEntry.mood_id = parseInt(copyEntry.moodId)
         if (!copyEntry.date) {
             copyEntry.date = Date(Date.now()).toLocaleString('en-us').split('GMT')[0]
         }
         onFormSubmit(copyEntry)
-    }
-
-    const pushTags = (value) => {
-        let index = tagsSelected.indexOf(value)
-        if (tagsSelected.includes(value)) {
-            updateTags(tagsSelected.splice(index, 1))
-        } else { updateTags(tagsSelected.push(value)) }
     }
 
     return (
@@ -75,14 +86,14 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
                         <label htmlFor="moodId" className="label">Mood: </label>
                         <div className="control">
                             <div className="select">
-                                <select name="moodId"
+                                <select name="mood_id"
                                     proptype="int"
-                                    value={updatedEntry.moodId}
+                                    value={updatedEntry.mood_id}
                                     onChange={handleControlledInputChange}>
 
                                     <option value="0">Select a mood</option>
                                     {moods.map(m => (
-                                        <option key={m.id} value={m.id}>
+                                        <option key={m.id} value={parseInt(m.id)}>
                                             {m.label}
                                         </option>
                                     ))}
@@ -97,9 +108,7 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
                                 return <>
                                     <input type="checkbox" name="tags"
                                         value={tag.id}
-                                        onChange={() => {
-                                            pushTags(tag.id)
-                                        }} /> {tag.name}
+                                        onChange={handleCheckboxes} /> {tag.name}
                                 </>
                             })}
                         </div>

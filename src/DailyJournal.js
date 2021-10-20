@@ -13,13 +13,9 @@ export const DailyJournal = () => {
   useEffect(() => {
     getAllEntries()
     getMoods().then(moodsData => setMoods(moodsData))
+    getTags().then(data => setTags(data))
   }, [])
 
-  useEffect(
-    () => {
-      getTags().then(data => setTags(data))
-    }, []
-  )
 
   const getAllEntries = () => {
     getEntries().then(entriesData => setEntries(entriesData))
@@ -53,7 +49,7 @@ export const DailyJournal = () => {
     <div className="DailyJournal container">
       <div className="columns">
         <div className="column">
-          <EntryForm entry={entry} moods={moods} onFormSubmit={onFormSubmit} tags={tags}/>
+          <EntryForm entry={entry} moods={moods} onFormSubmit={onFormSubmit} tags={tags} />
         </div>
         <div className="column">
           <EntryList
