@@ -17,14 +17,25 @@ export const Entry = ({ entry, mood, onEditButtonClick, onDeleteButtonClick }) =
       }
     }
   }
+  const getTags = () => {
+    const array = []
+    for (const tag of entry.tags) {
+      array.push(tag.name)
+    }
+    return array
+  }
+  const tags = getTags()
 
   return (
-    <article className={`message ${getMessageType()}`} style={{width:"100%"}}>
+    <article className={`message ${getMessageType()}`} style={{ width: "100%" }}>
       <div className="message-body">
         <p className="entry__concept">{entry.concept}</p>
         <p className="entry__entry">{entry.entry}</p>
         <p className="entry__date">{entry.date}</p>
         <p className="entry__mood">{mood?.label}</p>
+        <p className="entry__tags">
+          {tags.length > 0 ? 'Tags: ' : ''}{tags.join(", ")}
+        </p>
         <div className="buttons">
           <button className={`button ${getMessageType()} is-outlined`} onClick={
             () => {

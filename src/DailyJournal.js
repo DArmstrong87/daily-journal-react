@@ -16,7 +16,6 @@ export const DailyJournal = () => {
     getTags().then(data => setTags(data))
   }, [])
 
-
   const getAllEntries = () => {
     getEntries().then(entriesData => setEntries(entriesData))
   }

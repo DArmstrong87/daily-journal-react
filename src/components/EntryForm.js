@@ -26,29 +26,46 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
 
     console.log(updatedEntry)
     const handleCheckboxes = (event) => {
-        const newEntry = Object.assign({}, updatedEntry)
-        if (newEntry.tags) {
-            if (newEntry.tags.includes(parseInt(event.target.value))) {
-                const index = newEntry.tags.indexOf(parseInt(event.target.value))
-                newEntry.tags.splice(index, 1)
+        console.log('edit mode', editMode)
+        let newEntry = {}
+        let value = parseInt(event.target.value)
+        if (editMode) { // Edit mode = true
+            newEntry = { ...updatedEntry }
+            let tags = newEntry.tags
+            const foundTag = () => newEntry.tags.find(tag => tag.id === value || tag === value)
+            if (foundTag()) { // If the array contains the tag id in an object or as an integer.
+                const index = tags.indexOf(foundTag())
+                tags.splice(index, 1)
+                console.log('Found tag id, deleting from current array')
+            } else { // The tag id is not in the array
+                tags.push(value)
+                console.log('Adding new tag id')
             }
-            else {
-                newEntry.tags.push(parseInt(event.target.value))
+            newEntry.tags?.sort()
+        } else { // Edit mode = false
+            newEntry = Object.assign({}, updatedEntry)
+            if (newEntry.tags) { // If tags property exists.
+                if (newEntry.tags.includes(value)) {
+                    const index = newEntry.tags.indexOf(value)
+                    newEntry.tags.splice(index, 1)
+                }
+                else {
+                    newEntry.tags.push(value)
+                }
             }
+            else { // If tags property doesn't exist, create one.
+                newEntry.tags = []
+                newEntry.tags.push(value)
+            }
+            newEntry.tags?.sort()
         }
-        else {
-            newEntry.tags = []
-            newEntry.tags.push(parseInt(event.target.value))
-        }
-        newEntry.tags.sort()
-        setUpdatedEntry(newEntry)
 
+        setUpdatedEntry(newEntry)
     }
 
 
     const constructNewEntry = () => {
         const copyEntry = { ...updatedEntry }
-        // copyEntry.mood_id = parseInt(copyEntry.moodId)
         if (!copyEntry.date) {
             copyEntry.date = Date(Date.now()).toLocaleString('en-us').split('GMT')[0]
         }
@@ -108,6 +125,11 @@ export const EntryForm = ({ entry, moods, onFormSubmit, tags }) => {
                                 return <>
                                     <input type="checkbox" name="tags"
                                         value={tag.id}
+                                        checked={
+                                            editMode && updatedEntry.tags?.some(currTag => tag.id === currTag.id
+                                                || tag.id === currTag)
+                                                ? true :
+                                                !editMode && updatedEntry.tags?.some(currTag => tag.id === currTag) ? true : false}
                                         onChange={handleCheckboxes} /> {tag.name}
                                 </>
                             })}
